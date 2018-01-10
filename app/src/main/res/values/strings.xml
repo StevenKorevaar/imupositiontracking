@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">imu_tracking</string>
+    <string name="IMU_Position_Tracking">IMU Position Tracking</string>
+    <string name="PlaceholderMainView">Compass Direction:\n
+
+Acceleration (PHONE REFERENCE):
+        X:
+        Y:
+        Z:
+
+Acceleration (WORLD REFERENCE):
+        X:     No Movement:
+        Y:     No Movement:
+        Z:
+
+Velocity (WORLD REFERENCE):
+        X:
+        Y:
+
+Displacement (WORLD REFERENCE):
+        X:
+        Y:
+
+Rotation Matrix:
+      [ %f , %f , %f
+        %f , %f , %f
+        %f , %f , %f ]
+
+Orientation Matrix:
+        Azimuth:
+        Pitch:
+        Roll:       %f
+
+Step Count:
+
+Current Position:
+        X:
+        Y:
+
+</string>
+</resources>
