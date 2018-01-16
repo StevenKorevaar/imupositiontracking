@@ -57,18 +57,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView t;
     Button b;
 
-    // Used to load the 'native-lib' library on application startup.
-    static {
-        System.loadLibrary("native-lib");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        t=(TextView)findViewById(R.id.text);
-        t.setText("Step One: blast egg");
+        t = (TextView)findViewById(R.id.text);
+
 
         b = (Button)findViewById(R.id.reset);
 
@@ -92,18 +88,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
+
         try {
 
             mSensorManager = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
             mRotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
             mStepSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
+            System.out.println("Here 1");
             mSensorManager.registerListener(this, mRotationSensor, SENSOR_DELAY);
-            mSensorManager.registerListener(this,mStepSensor,SENSOR_DELAY);
+            System.out.println("Here 2");
+            mSensorManager.registerListener(this,mStepSensor, SENSOR_DELAY);
+            System.out.println("Here 3");
 
         }
         catch (Exception e) {
             Toast.makeText(this, "Hardware compatibility issue", Toast.LENGTH_LONG).show();
+            System.out.println("Exception Found");
         }
 
     }
@@ -113,8 +114,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+
     @Override
     public void onSensorChanged(SensorEvent event) {
+        System.out.println("onSensorChanged");
 
 
         if (event.sensor == mRotationSensor) {
@@ -134,6 +137,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void updateRot(float[] vectors) {
 
+        //System.out.println("updateRot");
+
+
         SensorManager.getRotationMatrixFromVector(rotationMatrix, vectors);
         SensorManager.getOrientation(rotationMatrix, orientation);
 
@@ -142,13 +148,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         xdeg =  orientation[0] * FROM_RADS_TO_DEGS;
     }
 
-    String filename = "myfile";
-    FileOutputStream outputStream;
+    //String filename = "myfile";
+    //FileOutputStream outputStream;
 
     private static final int NO_MOVEMENT = 10000;
     double lowPassA = 0.0;
 
     private void updateAcc(float[] vectors) {
+
+        //System.out.println("updateAcc");
+
 
         accel[0] = lowPassA * accel[0] + (1 - lowPassA)
                 * vectors[0];
@@ -230,12 +239,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void roundVector(double[] vec, int p) {
+
+        //System.out.println("roundVector");
+
         for(int i = 0; i < vec.length; ++i) {
             vec[i] = (double) Math.round(vec[i] * p) / p;
         }
     }
 
     private void multiplyRotation(float[] rot, double[] vec, double[] ans) {
+
+        //System.out.println("multiplyRotation");
+
         ans[0] = rot[0]*vec[0] + rot[1]*vec[1] + rot[2]*vec[2];
         ans[1] = rot[3]*vec[0] + rot[4]*vec[1] + rot[5]*vec[2];
         ans[2] = rot[6]*vec[0] + rot[7]*vec[1] + rot[8]*vec[2];
@@ -243,6 +258,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void stepCount (double norming){
+
+        System.out.println("stepCount");
+
 
         if (norming > 10.403 )
             pmax = 1;
@@ -335,13 +353,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 ,s , posStep[1], posStep[0]);
 
         t.setText(s);
-
+        System.out.println("Finished Step Count");
     }
 
-
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
 }

@@ -7,60 +7,67 @@
     tools:context="xyan.projects.imu_tracking.MainActivity">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:orientation="vertical"
-        android:weightSum="6"
-        >
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/text"
 
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
             android:text="@string/PlaceholderMainView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_weight="5"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
+            android:id="@+id/buttonBar"
+            style="?android:attr/borderlessButtonStyle"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/text"
-            android:layout_marginTop="435dp"
-            android:orientation="horizontal"
-            android:weightSum="3"
 
+            android:orientation="horizontal"
+            android:visibility="visible"
+            android:weightSum="3"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text"
-            android:layout_weight="1"
-            >
+            app:layout_constraintTop_toBottomOf="@+id/text">
 
             <Button
                 android:id="@+id/reset"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                style="?android:attr/borderlessButtonStyle"
+
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+
                 android:layout_weight="1"
-                android:text="Reset" />
+                android:text="@string/ResetBTN" />
 
             <Button
                 android:id="@+id/startWriting"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                style="?android:attr/borderlessButtonStyle"
+
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
 
                 android:layout_weight="1"
-                android:text="Start Writing" />
+                android:text="@string/StartWritingBTN" />
 
             <Button
                 android:id="@+id/stopWriting"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                style="?android:attr/borderlessButtonStyle"
+
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
 
                 android:layout_weight="1"
-                android:text="Stop Writing" />
+                android:text="@string/StopWritingBTN" />
 
         </LinearLayout>
 
