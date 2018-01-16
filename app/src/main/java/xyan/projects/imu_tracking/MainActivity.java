@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private float[] mGravity = {0, 0, 0}, mGeomagnetic = {0, 0, 0};
 
-    private static final int SENSOR_DELAY = 1000;
+    private static final int SENSOR_DELAY = 15000;
     private static final double FROM_RADS_TO_DEGS = 180/Math.PI;
     private double norming;
 
@@ -303,8 +303,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         String s;
 
-        s = String.format(Locale.ENGLISH, "Compass Direction:    %f\n",
-                xdeg);
+        s = String.format(Locale.ENGLISH, "Orientation Matrix: \n" +
+                        "       Azimuth:    %f\n" +
+                        "       Pitch:      %f\n" +
+                        "       Roll:       %f\n"
+                ,orientation[0], orientation[1], orientation[1]);
 
         s = String.format(Locale.ENGLISH, "%s\nAcceleration (PHONE REFERENCE):\n" +
                         "       X:     %f\n" +
@@ -337,13 +340,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 s ,rotationMatrix[0], rotationMatrix[1], rotationMatrix[2],
                 rotationMatrix[3], rotationMatrix[4], rotationMatrix[5],
                 rotationMatrix[6], rotationMatrix[7], rotationMatrix[8]);
-
-        s = String.format(Locale.ENGLISH, "%s\nOrientation Matrix: \n" +
-                        "       Azimuth:    %f\n" +
-                        "       Pitch:      %f\n" +
-                        "       Roll:       %f\n"
-                ,s ,orientation[0], orientation[1], orientation[1]);
-
 
         s = String.format(Locale.ENGLISH, "%s\nStep Count: %d\n", s, steps);
 

@@ -41,7 +41,7 @@
 
             <Button
                 android:id="@+id/reset"
-                style="?android:attr/borderlessButtonStyle"
+                style="@style/Widget.AppCompat.Button.Borderless"
 
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -51,7 +51,7 @@
 
             <Button
                 android:id="@+id/startWriting"
-                style="?android:attr/borderlessButtonStyle"
+                style="@style/Widget.AppCompat.Button.Borderless"
 
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -61,7 +61,7 @@
 
             <Button
                 android:id="@+id/stopWriting"
-                style="?android:attr/borderlessButtonStyle"
+                style="@style/Widget.AppCompat.Button.Borderless"
 
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

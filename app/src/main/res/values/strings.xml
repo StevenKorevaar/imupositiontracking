@@ -4,7 +4,10 @@
     <string name="ResetBTN">Reset</string>
     <string name="StartWritingBTN">Start Writing</string>
     <string name="StopWritingBTN">Stop Writing</string>
-    <string name="PlaceholderMainView">Compass Direction:\n
+    <string name="PlaceholderMainView">Orientation Matrix:\n
+        Azimuth:\n
+        Pitch:\n
+        Roll:\n
 \n
 Acceleration (PHONE REFERENCE):\n
         X:\n
@@ -29,16 +32,10 @@ Rotation Matrix:\n
         %f , %f , %f\n
         %f , %f , %f ]\n
 \n
-Orientation Matrix:\n
-        Azimuth:\n
-        Pitch:\n
-        Roll:\n
-\n
 Step Count:\n
 \n
 Current Position:\n
         X:\n
         Y:
-
 </string>
 </resources>
