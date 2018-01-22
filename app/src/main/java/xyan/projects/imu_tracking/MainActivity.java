@@ -1,5 +1,7 @@
 package xyan.projects.imu_tracking;
 
+import android.content.Context;
+import android.net.sip.SipSession;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -13,6 +15,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.widget.Toast;
 import android.app.Activity;
+
+import java.io.File;
 import java.lang.Math;
 import java.util.Locale;
 
@@ -20,12 +24,16 @@ import java.io.FileOutputStream;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
 
+    private Context context;
+
     private SensorManager mSensorManager;
     private Sensor mRotationSensor, mStepSensor;
+    private SensorEventListener listener;
 
     private float[] mGravity = {0, 0, 0}, mGeomagnetic = {0, 0, 0};
 
-    private static final int SENSOR_DELAY = 15000;
+    private static int SENSOR_DELAY = 6000;
+    private static int NEXT_SENSOR_DELAY = 6000;
     private static final double FROM_RADS_TO_DEGS = 180/Math.PI;
     private double norming;
 
@@ -45,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private double accel[] = {0,0,0};
     private double accelWorld[] = {0,0,0};
 
+    private boolean toWrite = false;
+
     private int count = 0;
     private int accelCount[] = {0,0};
 
@@ -63,14 +73,38 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        context = this;
+
+        path = context.getFilesDir();
+        file = new File(path, "accel.txt");
+
         t = (TextView)findViewById(R.id.text);
 
+        try {
+            listener = this;
+            mSensorManager = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
+            mRotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+            mStepSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+            System.out.println("Here 1");
+            mSensorManager.registerListener(listener, mRotationSensor, SENSOR_DELAY);
+            System.out.println("Here 2");
+            mSensorManager.registerListener(listener, mStepSensor, SENSOR_DELAY);
+            System.out.println("Here 3");
+
+        }
+        catch (Exception e) {
+            Toast.makeText(this, "Hardware compatibility issue", Toast.LENGTH_LONG).show();
+            System.out.println("Exception Found");
+        }
 
         b = (Button)findViewById(R.id.reset);
 
         b.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+
+                SENSOR_DELAY = NEXT_SENSOR_DELAY;
                 //Set Text on button click via this function.
                 //t.setText(" Text Change successfully ");
                 posStep[0] = 0;
@@ -85,27 +119,49 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 displacement[1] = 0;
                 displacement[2] = 0;
 
+                try {
+                    outputStream = new FileOutputStream(file);
+                    try {
+                        outputStream.write("".getBytes());
+                    } finally {
+                        outputStream.close();
+                    }
+
+
+                }
+                catch (Exception e) {
+                    System.out.println("Error Writing to File");
+                }
+
+
+                /*
+                mSensorManager.unregisterListener(listener ,mRotationSensor);
+                mSensorManager.unregisterListener(listener, mStepSensor);
+
+                mSensorManager.registerListener(listener, mRotationSensor, SENSOR_DELAY);
+                //System.out.println("Here 2");
+                mSensorManager.registerListener(listener, mStepSensor, SENSOR_DELAY);
+                */
             }
         });
 
+        b = (Button)findViewById(R.id.startWriting);
 
-        try {
+        b.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                //NEXT_SENSOR_DELAY -= 1000;
+                toWrite = true;
+            }
+        });
 
-            mSensorManager = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
-            mRotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-            mStepSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        b = (Button)findViewById(R.id.stopWriting);
 
-            System.out.println("Here 1");
-            mSensorManager.registerListener(this, mRotationSensor, SENSOR_DELAY);
-            System.out.println("Here 2");
-            mSensorManager.registerListener(this,mStepSensor, SENSOR_DELAY);
-            System.out.println("Here 3");
-
-        }
-        catch (Exception e) {
-            Toast.makeText(this, "Hardware compatibility issue", Toast.LENGTH_LONG).show();
-            System.out.println("Exception Found");
-        }
+        b.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                //NEXT_SENSOR_DELAY += 1000;
+                toWrite = false;
+            }
+        });
 
     }
 
@@ -117,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        System.out.println("onSensorChanged");
+        //System.out.println("onSensorChanged");
 
 
         if (event.sensor == mRotationSensor) {
@@ -148,8 +204,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         xdeg =  orientation[0] * FROM_RADS_TO_DEGS;
     }
 
-    //String filename = "myfile";
-    //FileOutputStream outputStream;
+    File path;
+    File file;
+    FileOutputStream outputStream;
 
     private static final int NO_MOVEMENT = 10000;
     double lowPassA = 0.0;
@@ -157,6 +214,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void updateAcc(float[] vectors) {
 
         //System.out.println("updateAcc");
+
 
 
         accel[0] = lowPassA * accel[0] + (1 - lowPassA)
@@ -172,6 +230,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         accel[2] = vectors[2];
         */
         multiplyRotation(rotationMatrix, accel, accelWorld);
+
+        if(toWrite) {
+            try {
+                outputStream = new FileOutputStream(file,true);
+                String s = String.format(Locale.ENGLISH, "%f, %f, %f\n"
+                        ,accelWorld[0], accelWorld[2], accelWorld[2]);
+
+                try {
+                    outputStream.write(s.getBytes());
+                } finally {
+                    outputStream.close();
+                }
+
+            }
+            catch (Exception e) {
+                System.out.println("Error Writing to File");
+            }
+
+        }
 
         ++count;
 
@@ -258,10 +335,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void stepCount (double norming){
+        //System.out.println("stepCount");
 
-        System.out.println("stepCount");
-
-
+        /*
         if (norming > 10.403 )
             pmax = 1;
 
@@ -299,6 +375,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             pmin = 0;
             pmax = 0;
         }
+        */
 
 
         String s;
@@ -333,23 +410,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         "       Y:     %f\n",
                 s, displacement[0], displacement[1]);
 
-        s = String.format(Locale.ENGLISH, "%s\nRotation Matrix: \n" +
-                        "     [ %f , %f , %f \n" +
-                        "       %f , %f , %f \n" +
-                        "       %f , %f , %f ]\n",
-                s ,rotationMatrix[0], rotationMatrix[1], rotationMatrix[2],
-                rotationMatrix[3], rotationMatrix[4], rotationMatrix[5],
-                rotationMatrix[6], rotationMatrix[7], rotationMatrix[8]);
+        s = String.format(Locale.ENGLISH, "%s\nSensor Delay: %d\t\tNext Sensor Delay: %d\n", s, steps, SENSOR_DELAY, NEXT_SENSOR_DELAY);
 
-        s = String.format(Locale.ENGLISH, "%s\nStep Count: %d\n", s, steps);
-
-        s = String.format(Locale.ENGLISH, "%s\nCurrent Position: \n" +
-                        "       X:  %f\n" +
-                        "       Y:  %f\n"
-                ,s , posStep[1], posStep[0]);
+        s = String.format(Locale.ENGLISH, "%s\nWriting to File: %s\n"
+                ,s ,( toWrite ? "True" : "False") );
 
         t.setText(s);
-        System.out.println("Finished Step Count");
+        //System.out.println("Finished Step Count");
     }
 
 }
